@@ -326,6 +326,12 @@ def fraud_ratio_calculator_for_numeric_categoric_variables(
     return df_merged
 
 def hit_rate(df, type):
+    """
+    This function returns ratios about hit rate.  
+    :param df: Dataframe to be analyze.
+    :param type: Types define calculations as count and sum.
+    :return: Ratio.
+    """
     if type == 1: #Transaction count
         numerator = int(
             df.groupby(by=["EVENT_LABEL"])["merchant_id"]
@@ -363,6 +369,12 @@ def hit_rate(df, type):
     return round(numerator / denominator, 4)
 
 def catch_rate(sub_df, main_df, type):
+    """
+    This function returns ratios about catch rate.  
+    :param df: Dataframe to be analyze.
+    :param type: Types define calculations as count and sum.
+    :return: Ratio.
+    """
     if type == 1: #Transaction count    
         numerator = int(
             sub_df.groupby(by=["EVENT_LABEL"])["merchant_id"]
@@ -398,7 +410,12 @@ def catch_rate(sub_df, main_df, type):
     return round(numerator / denominator, 4)
 
 def rejection_rate(df, rule_column, type):
-
+    """
+    This function returns ratios about rejection rate.  
+    :param df: Dataframe to be analyze.
+    :param type: Types define calculations as count and sum.
+    :return: Ratio.
+    """
     if type == 1:
         numerator = int(
             df.groupby(by=[rule_column])["merchant_id"]
