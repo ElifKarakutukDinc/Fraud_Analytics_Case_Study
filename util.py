@@ -324,3 +324,39 @@ def fraud_ratio_calculator_for_numeric_categoric_variables(
     df_merged["numeric_fraud_ratio"] = df_merged[fraud_total] / df_merged[numeric_total]
 
     return df_merged
+
+def hit_rate(df):
+    numerator = int(
+        df.groupby(by=["EVENT_LABEL"])["merchant_id"]
+        .count()
+        .reset_index()
+        .iloc[0]
+        .iloc[1]
+    )
+    denominator = int(
+        df.groupby(by=["EVENT_LABEL"])["merchant_id"]
+        .count()
+        .reset_index()
+        .iloc[0:2]
+        .sum()
+        .iloc[1]
+    )
+    return round(numerator / denominator, 4)
+
+def catch_rate(sub_df, main_df):
+    numerator = int(
+        sub_df.groupby(by=["EVENT_LABEL"])["merchant_id"]
+        .count()
+        .reset_index()
+        .iloc[0]
+        .iloc[1]
+    )
+    main_df = main_df[main_df["EVENT_LABEL"] == "fraud"].copy()
+    denominator = int(
+        main_df.groupby(by=["EVENT_LABEL"])["merchant_id"]
+        .count()
+        .reset_index()
+        .iloc[0]
+        .iloc[1]
+    )
+    return round(numerator / denominator, 4)
