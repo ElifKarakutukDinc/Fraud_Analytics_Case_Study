@@ -248,3 +248,79 @@ def df_descriptive_statistics(df, column_list):
     except Exception as e:
         print("Error at df_descriptive_statistics function: ", str(e))
 
+
+        
+def fraud_ratio_calculator_for_two_categoric_variables(
+    df, categoric_column_1, categoric_column_2
+):
+    """
+    This function gets a Python Pandas dataframe about results of two categoric varibles. 
+    :param df: Dataframe to be analyze.
+    :param categoric_column_1:Categoric column to calculation.
+    :param categoric_column_2:Categoric column to calculation.
+    :return:df.
+    """
+    df_main = (
+        df.groupby(by=[categoric_column_1, categoric_column_2])["EVENT_LABEL_"]
+        .count()
+        .reset_index()
+        .copy()
+    )
+    df_fraud = (
+        df[df["EVENT_LABEL_"] == 1]
+        .groupby(by=[categoric_column_1, categoric_column_2])["EVENT_LABEL_"]
+        .count()
+        .reset_index()
+        .copy()
+    )
+    df_merged = pd.merge(
+        df_main,
+        df_fraud,
+        how="left",
+        on=[categoric_column_1, categoric_column_2],
+        suffixes=("_all", "_fraud"),
+    ).fillna(0)
+    df_merged["EVENT_LABEL_fraud_ratio"] = (
+        df_merged["EVENT_LABEL__fraud"] / df_merged["EVENT_LABEL__all"]
+    )
+    return df_merged
+
+
+def fraud_ratio_calculator_for_numeric_categoric_variables(
+    df, categoric_column_1, numeric_variable
+):
+    """
+    This function gets a Python Pandas dataframe about results of two categoric varibles. 
+    :param df: Dataframe to be analyze.
+    :param categoric_column_1:Categoric column to calculation.
+    :param categoric_column_2:Categoric column to calculation.
+    :param numeric_variable:Numeric column to calculation.
+    :return:df.
+    """
+    df_main = (
+        df.groupby(by=[categoric_column_1])[numeric_variable]
+        .sum()
+        .reset_index()
+        .copy()
+    )
+    df_fraud = (
+        df[df["EVENT_LABEL_"] == 1]
+        .groupby(by=[categoric_column_1])[numeric_variable]
+        .sum()
+        .reset_index()
+        .copy()
+    )
+    df_merged = pd.merge(
+        df_main,
+        df_fraud,
+        how="left",
+        on=[categoric_column_1],
+        suffixes=("_total", "_fraud"),
+    ).fillna(0)
+
+    numeric_total = numeric_variable + "_total"
+    fraud_total = numeric_variable + "_fraud"
+
+    df_merged["numeric_fraud_ratio"] = df_merged[fraud_total] / df_merged[numeric_total]
+
+    return df_merged
