@@ -325,38 +325,100 @@ def fraud_ratio_calculator_for_numeric_categoric_variables(
 
     return df_merged
 
-def hit_rate(df):
-    numerator = int(
-        df.groupby(by=["EVENT_LABEL"])["merchant_id"]
-        .count()
-        .reset_index()
-        .iloc[0]
-        .iloc[1]
-    )
-    denominator = int(
-        df.groupby(by=["EVENT_LABEL"])["merchant_id"]
-        .count()
-        .reset_index()
-        .iloc[0:2]
-        .sum()
-        .iloc[1]
-    )
+def hit_rate(df, type):
+    if type == 1: #Transaction count
+        numerator = int(
+            df.groupby(by=["EVENT_LABEL"])["merchant_id"]
+            .count()
+            .reset_index()
+            .iloc[0]
+            .iloc[1]
+        )
+        denominator = int(
+            df.groupby(by=["EVENT_LABEL"])["merchant_id"]
+            .count()
+            .reset_index()
+            .iloc[0:2]
+            .sum()
+            .iloc[1]
+        )
+        
+    if type == 2: #Transaction amount
+        numerator = int(
+            df.groupby(by=["EVENT_LABEL"])["transaction_amt"]
+            .sum()
+            .reset_index()
+            .iloc[0]
+            .iloc[1]
+        )
+        denominator = int(
+            df.groupby(by=["EVENT_LABEL"])["transaction_amt"]
+            .sum()
+            .reset_index()
+            .iloc[0:2]
+            .sum()
+            .iloc[1]
+        )
+        
     return round(numerator / denominator, 4)
 
-def catch_rate(sub_df, main_df):
-    numerator = int(
-        sub_df.groupby(by=["EVENT_LABEL"])["merchant_id"]
-        .count()
-        .reset_index()
-        .iloc[0]
-        .iloc[1]
-    )
-    main_df = main_df[main_df["EVENT_LABEL"] == "fraud"].copy()
-    denominator = int(
-        main_df.groupby(by=["EVENT_LABEL"])["merchant_id"]
-        .count()
-        .reset_index()
-        .iloc[0]
-        .iloc[1]
-    )
+def catch_rate(sub_df, main_df, type):
+    if type == 1: #Transaction count    
+        numerator = int(
+            sub_df.groupby(by=["EVENT_LABEL"])["merchant_id"]
+            .count()
+            .reset_index()
+            .iloc[0]
+            .iloc[1]
+        )
+        main_df = main_df[main_df["EVENT_LABEL"] == "fraud"].copy()
+        denominator = int(
+            main_df.groupby(by=["EVENT_LABEL"])["merchant_id"]
+            .count()
+            .reset_index()
+            .iloc[0]
+            .iloc[1]
+        )
+    if type == 2: #Transaction amount    
+        numerator = int(
+            sub_df.groupby(by=["EVENT_LABEL"])["transaction_amt"]
+            .sum()
+            .reset_index()
+            .iloc[0]
+            .iloc[1]
+        )
+        main_df = main_df[main_df["EVENT_LABEL"] == "fraud"].copy()
+        denominator = int(
+            main_df.groupby(by=["EVENT_LABEL"])["transaction_amt"]
+            .sum()
+            .reset_index()
+            .iloc[0]
+            .iloc[1]
+        )
+    return round(numerator / denominator, 4)
+
+def rejection_rate(df, rule_column, type):
+
+    if type == 1:
+        numerator = int(
+            df.groupby(by=[rule_column])["merchant_id"]
+            .count()
+            .reset_index()
+            .iloc[1]
+            .iloc[1]
+        )
+
+        denominator = int(df.shape[0])
+
+    if type == 2:
+        numerator = int(
+            df.groupby(by=[rule_column])["transaction_amt"]
+            .sum()
+            .reset_index()
+            .iloc[1]
+            .iloc[1]
+        )
+
+        denominator = int(df["transaction_amt"].sum())
+
     return round(numerator / denominator, 4)
