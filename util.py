@@ -330,7 +330,7 @@ def hit_rate(df, type):
     This function returns ratios about hit rate.  
     :param df: Dataframe to be analyze.
     :param type: Types define calculations as count and sum.
-    :return: Ratio.
+    :return: Ratios.
     """
     if type == 1: #Transaction count
         numerator = int(
@@ -373,7 +373,7 @@ def catch_rate(sub_df, main_df, type):
     This function returns ratios about catch rate.  
     :param df: Dataframe to be analyze.
     :param type: Types define calculations as count and sum.
-    :return: Ratio.
+    :return: Ratios.
     """
     if type == 1: #Transaction count    
         numerator = int(
@@ -414,7 +414,7 @@ def rejection_rate(df, rule_column, type):
     This function returns ratios about rejection rate.  
     :param df: Dataframe to be analyze.
     :param type: Types define calculations as count and sum.
-    :return: Ratio.
+    :return: Ratios.
     """
     if type == 1:
         numerator = int(
